@@ -2,7 +2,8 @@ import flask
 from flask.ext.script import Manager
 from flask.ext.sqlalchemy import SQLAlchemy
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, instance_relative_config=True)
+app.config.from_pyfile('settings.py')
 db = SQLAlchemy(app)
 
 
@@ -56,3 +57,8 @@ def home():
 
 
 manager = Manager(app)
+
+
+@manager.command
+def syncdb():
+    db.create_all()
