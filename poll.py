@@ -1,6 +1,9 @@
+import string
 import flask
 from flask.ext.script import Manager
 from flask.ext.sqlalchemy import SQLAlchemy
+
+KEY_VOCABULARY = string.ascii_letters + string.digits
 
 app = flask.Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('settings.py')
@@ -62,3 +65,16 @@ manager = Manager(app)
 @manager.command
 def syncdb():
     db.create_all()
+
+
+def random_key():
+    import random
+    rnd = random.SystemRandom()
+    return ''.join(rnd.choice(KEY_VOCABULARY) for _ in xrange(12))
+
+
+@manager.command
+def create_person(name, email):
+    person = Person(name=name, email=email, secretkey=random_key())
+    db.session.add(person)
+    db.session.commit()
