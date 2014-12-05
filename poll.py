@@ -78,3 +78,35 @@ def create_person(name, email):
     person = Person(name=name, email=email, secretkey=random_key())
     db.session.add(person)
     db.session.commit()
+
+
+def get_or_create(model, **kv):
+    row = model.query.filter_by(**kv).first()
+    if row is None:
+        row = Group(**kv)
+        db.session.add(row)
+        db.session.flush()
+    return row
+
+
+@manager.command
+def set_group(spec_path):
+    import yaml
+    with open(spec_path) as f:
+        data = yaml.load(f)
+
+    group = get_or_create(Group, slug=data['slug'])
+    current_members = set(p.email for p in group.members)
+    new_members = set(data['members'])
+
+    for email in new_members - current_members:
+        print 'adding:', email
+        person = Person.query.filter_by(email=email).one()
+        group.members.append(person)
+
+    for email in current_members - new_members:
+        print 'removing:', email
+        person = Person.query.filter_by(email=email).one()
+        group.members.remove(person)
+
+    db.session.commit()
