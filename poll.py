@@ -17,7 +17,7 @@ class Person(db.Model):
     email = db.Column(db.String, unique=True)
     secretkey = db.Column(db.String, unique=True)
 
-    member = db.relationship('PollMember', lazy='dynamic', backref='person')
+    memberships = db.relationship('PollMember', lazy='dynamic', backref='person')
 
 
 group_member = db.Table(
@@ -48,6 +48,16 @@ class Poll(db.Model):
     votes_abs = db.Column(db.Integer, default=0, nullable=False)
 
     members = db.relationship('PollMember', lazy='dynamic', backref='poll')
+
+    def get_current_member(self):
+        if flask.g.user:
+            for member in flask.g.user.memberships:
+                if member.poll == self:
+                    return member
+
+    def user_can_vote(self):
+        member = self.get_current_member()
+        return (member and not member.voted)
 
 
 class PollMember(db.Model):
@@ -105,6 +115,29 @@ def create_poll(slug):
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('create_poll.html', group=group)
+
+
+@app.route('/vote', methods=['POST'])
+def vote():
+    form = flask.request.form
+    db.session.execute('BEGIN IMMEDIATE TRANSACTION')
+    poll = Poll.query.filter_by(slug=form['poll']).first_or_404()
+    member = poll.get_current_member()
+    if not member:
+        flask.abort(403)
+
+    member.voted = True
+    if form['vote'] == 'yee':
+        poll.votes_yee += 1
+    elif form['vote'] == 'nay':
+        poll.votes_nay += 1
+    elif form['vote'] == 'abs':
+        poll.votes_abs += 1
+    else:
+        flask.abort(400)
+
+    db.session.commit()
+    return flask.redirect(flask.url_for('home'))
 
 
 manager = Manager(app)
