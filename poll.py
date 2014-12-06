@@ -61,9 +61,14 @@ class PollMember(db.Model):
 @app.before_request
 def authenticate_request():
     flask.g.user = None
+    flask.g.is_admin = False
     secretkey = flask.session.get('secretkey')
     if secretkey:
-        flask.g.user = Person.query.filter_by(secretkey=secretkey).first()
+        user = Person.query.filter_by(secretkey=secretkey).first()
+        if user:
+            flask.g.user = user
+            if user.email in app.config.get('ADMIN_EMAILS', []):
+                flask.g.is_admin = True
 
 
 @app.route('/login/<secretkey>')
