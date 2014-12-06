@@ -73,13 +73,6 @@ def random_key():
     return ''.join(rnd.choice(KEY_VOCABULARY) for _ in xrange(12))
 
 
-@manager.command
-def create_person(name, email):
-    person = Person(name=name, email=email, secretkey=random_key())
-    db.session.add(person)
-    db.session.commit()
-
-
 def get_or_create(model, **kv):
     row = model.query.filter_by(**kv).first()
     if row is None:
@@ -87,6 +80,21 @@ def get_or_create(model, **kv):
         db.session.add(row)
         db.session.flush()
     return row
+
+
+@manager.command
+def set_people(spec_path):
+    import yaml
+    with open(spec_path) as f:
+        data = yaml.load(f)
+
+    for row in data:
+        person = get_or_create(Person, email=row['email'])
+        person.name = row['name']
+        if person.secretkey is None:
+            person.secretkey = random_key()
+
+    db.session.commit()
 
 
 @manager.command
