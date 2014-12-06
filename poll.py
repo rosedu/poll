@@ -15,7 +15,7 @@ class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
-    secretkey = db.Column(db.String)
+    secretkey = db.Column(db.String, unique=True)
 
 
 group_member = db.Table(
