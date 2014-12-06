@@ -120,34 +120,27 @@ def set_people(spec_path):
     with open(spec_path) as f:
         data = yaml.load(f)
 
-    for row in data:
+    for row in data['people']:
         person = get_or_create(Person, email=row['email'])
         person.name = row['name']
         if person.secretkey is None:
             person.secretkey = random_key()
 
-    db.session.commit()
+    for slug, gdata in data['groups'].items():
+        group = get_or_create(Group, slug=slug)
+        group.name = gdata['name']
+        current_members = set(p.email for p in group.members)
+        new_members = set(gdata['members'])
 
+        for email in new_members - current_members:
+            print 'adding:', email
+            person = Person.query.filter_by(email=email).one()
+            group.members.append(person)
 
-@manager.command
-def set_group(spec_path):
-    import yaml
-    with open(spec_path) as f:
-        data = yaml.load(f)
-
-    group = get_or_create(Group, slug=data['slug'])
-    current_members = set(p.email for p in group.members)
-    new_members = set(data['members'])
-
-    for email in new_members - current_members:
-        print 'adding:', email
-        person = Person.query.filter_by(email=email).one()
-        group.members.append(person)
-
-    for email in current_members - new_members:
-        print 'removing:', email
-        person = Person.query.filter_by(email=email).one()
-        group.members.remove(person)
+        for email in current_members - new_members:
+            print 'removing:', email
+            person = Person.query.filter_by(email=email).one()
+            group.members.remove(person)
 
     db.session.commit()
 
