@@ -83,7 +83,7 @@ def create_person(name, email):
 def get_or_create(model, **kv):
     row = model.query.filter_by(**kv).first()
     if row is None:
-        row = Group(**kv)
+        row = model(**kv)
         db.session.add(row)
         db.session.flush()
     return row
