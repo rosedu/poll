@@ -88,6 +88,7 @@ def home():
     return flask.render_template(
         'home.html',
         poll_list=Poll.query.filter_by(isopen=True).all(),
+        group_list=Group.query.all(),
     )
 
 

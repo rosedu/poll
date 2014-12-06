@@ -15,3 +15,15 @@
 {% for poll in poll_list %}
   <h2>{{ poll.name }}</h2>
 {% endfor %}
+
+{% if g.is_admin %}
+  <h2>Admin</h2>
+
+  <ul>
+    {% for group in group_list %}
+      <li>
+        {{ group.name }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
