@@ -41,7 +41,7 @@ class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     slug = db.Column(db.String, unique=True)
-    isopen = db.Column(db.Boolean, default=False, nullable=False)
+    isopen = db.Column(db.Boolean, default=True, nullable=False)
     isvisible = db.Column(db.Boolean, default=True, nullable=False)
     votes_yee = db.Column(db.Integer, default=0, nullable=False)
     votes_nay = db.Column(db.Integer, default=0, nullable=False)
