@@ -60,7 +60,10 @@ class PollMember(db.Model):
 
 @app.route('/')
 def home():
-    return flask.render_template('home.html')
+    return flask.render_template(
+        'home.html',
+        poll_list=Poll.query.filter_by(isopen=True).all(),
+    )
 
 
 manager = Manager(app)

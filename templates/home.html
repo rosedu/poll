@@ -5,3 +5,7 @@
 <html>
 
 <h1>ROSEdu polls</h1>
+
+{% for poll in poll_list %}
+  <h2>{{ poll.name }}</h2>
+{% endfor %}
