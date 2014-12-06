@@ -25,6 +25,18 @@
   {% else %}
     ai votat deja, mulțumim!
   {% endif %}
+
+  {% if g.is_admin %}
+    {% set novote = poll.has_not_voted() %}
+    {% if novote %}
+      nu au votat:
+      <ul>
+      {% for p in novote %}
+        <li>{{ p.name }} ({{ p.email }})</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
 {% endfor %}
 
 {% if g.is_admin %}

@@ -59,6 +59,9 @@ class Poll(db.Model):
         member = self.get_current_member()
         return (member and not member.voted)
 
+    def has_not_voted(self):
+        return [m.person for m in self.members if not m.voted]
+
 
 class PollMember(db.Model):
 
