@@ -60,7 +60,7 @@ class PollMember(db.Model):
 
 @app.route('/')
 def home():
-    return 'hi'
+    return flask.render_template('home.html')
 
 
 manager = Manager(app)
