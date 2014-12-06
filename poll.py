@@ -58,6 +58,26 @@ class PollMember(db.Model):
     voted = db.Column(db.Boolean, default=False, nullable=False)
 
 
+@app.before_request
+def authenticate_request():
+    flask.g.user = None
+    secretkey = flask.session.get('secretkey')
+    if secretkey:
+        flask.g.user = Person.query.filter_by(secretkey=secretkey).first()
+
+
+@app.route('/login/<secretkey>')
+def login(secretkey):
+    flask.session['secretkey'] = secretkey
+    return flask.redirect(flask.url_for('home'))
+
+
+@app.route('/logout')
+def logout():
+    flask.session.pop('secretkey', None)
+    return flask.redirect(flask.url_for('home'))
+
+
 @app.route('/')
 def home():
     return flask.render_template(

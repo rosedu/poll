@@ -4,6 +4,11 @@
 
 <html>
 
+{% if g.user %}
+  Logged in as: {{ g.user.name }};
+  <a href="{{ url_for('logout') }}">logout</a>
+{% endif %}
+
 <h1>ROSEdu polls</h1>
 
 {% for poll in poll_list %}
