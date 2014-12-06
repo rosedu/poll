@@ -17,6 +17,8 @@ class Person(db.Model):
     email = db.Column(db.String, unique=True)
     secretkey = db.Column(db.String, unique=True)
 
+    member = db.relationship('PollMember', lazy='dynamic', backref='person')
+
 
 group_member = db.Table(
     'group_member',
@@ -44,6 +46,8 @@ class Poll(db.Model):
     votes_yee = db.Column(db.Integer, default=0, nullable=False)
     votes_nay = db.Column(db.Integer, default=0, nullable=False)
     votes_abs = db.Column(db.Integer, default=0, nullable=False)
+
+    members = db.relationship('PollMember', lazy='dynamic', backref='poll')
 
 
 class PollMember(db.Model):
@@ -117,4 +121,14 @@ def set_group(spec_path):
         person = Person.query.filter_by(email=email).one()
         group.members.remove(person)
 
+    db.session.commit()
+
+
+@manager.command
+def create_poll(group_slug, slug, name):
+    group = Group.query.filter_by(slug=group_slug).one()
+    poll = Poll(name=name, slug=slug)
+    db.session.add(poll)
+    for p in group.members:
+        poll.members.append(PollMember(person=p))
     db.session.commit()
