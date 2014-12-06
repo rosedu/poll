@@ -92,6 +92,21 @@ def home():
     )
 
 
+@app.route('/create_poll/<slug>', methods=['GET', 'POST'])
+def create_poll(slug):
+    group = Group.query.filter_by(slug=slug).first_or_404()
+    if flask.request.method == 'POST':
+        form = flask.request.form
+        poll = Poll(name=form['name'], slug=form['slug'])
+        db.session.add(poll)
+        for p in group.members:
+            poll.members.append(PollMember(person=p))
+        db.session.commit()
+        return flask.redirect(flask.url_for('home'))
+
+    return flask.render_template('create_poll.html', group=group)
+
+
 manager = Manager(app)
 
 
@@ -143,14 +158,4 @@ def set_people(spec_path):
             person = Person.query.filter_by(email=email).one()
             group.members.remove(person)
 
-    db.session.commit()
-
-
-@manager.command
-def create_poll(group_slug, slug, name):
-    group = Group.query.filter_by(slug=group_slug).one()
-    poll = Poll(name=name, slug=slug)
-    db.session.add(poll)
-    for p in group.members:
-        poll.members.append(PollMember(person=p))
     db.session.commit()

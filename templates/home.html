@@ -23,6 +23,7 @@
     {% for group in group_list %}
       <li>
         {{ group.name }}
+        [<a href="{{ url_for('create_poll', slug=group.slug) }}">new poll</a>]
       </li>
     {% endfor %}
   </ul>
