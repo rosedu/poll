@@ -19,9 +19,9 @@
     {% if poll.user_can_vote() %}
       <form action="{{ url_for('vote') }}" method="post">
         <input type="hidden" name="poll" value="{{ poll.slug }}">
-        <button type="submit" name="vote" value="yee">DA</button>
-        <button type="submit" name="vote" value="nay">NU</button>
-        <button type="submit" name="vote" value="abs">abțirere</button>
+        <button type="submit" name="vote" value="yee" class="btn btn-sm btn-default">DA</button>
+        <button type="submit" name="vote" value="nay" class="btn btn-sm btn-default">NU</button>
+        <button type="submit" name="vote" value="abs" class="btn btn-sm btn-default">abțirere</button>
       </form>
     {% else %}
       ai votat deja, mulțumim!
@@ -46,24 +46,24 @@
     {% if poll.isopen %}
       <form action="{{ url_for('set_poll_open', slug=poll.slug, newstate=False) }}"
             method="post">
-        <button type="submit">close poll</button>
+        <button type="submit" class="btn btn-sm btn-default">close poll</button>
       </form>
     {% else %}
       <form action="{{ url_for('set_poll_open', slug=poll.slug, newstate=True) }}"
             method="post">
-        <button type="submit">open poll</button>
+        <button type="submit" class="btn btn-sm btn-default">open poll</button>
       </form>
     {% endif %}
 
     {% if poll.isvisible %}
       <form action="{{ url_for('set_poll_visible', slug=poll.slug, newstate=False) }}"
             method="post">
-        <button type="submit">hide poll</button>
+        <button type="submit" class="btn btn-sm btn-default">hide poll</button>
       </form>
     {% else %}
       <form action="{{ url_for('set_poll_visible', slug=poll.slug, newstate=True) }}"
             method="post">
-        <button type="submit">show poll</button>
+        <button type="submit" class="btn btn-sm btn-default">show poll</button>
       </form>
     {% endif %}
   {% endif %}
