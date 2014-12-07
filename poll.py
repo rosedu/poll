@@ -2,12 +2,14 @@ import string
 import flask
 from flask.ext.script import Manager
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.mail import Mail, Message
 
 KEY_VOCABULARY = string.ascii_letters + string.digits
 
 app = flask.Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('settings.py')
 db = SQLAlchemy(app)
+mail = Mail(app)
 
 
 class Person(db.Model):
@@ -108,6 +110,28 @@ def logout():
     flask.session.pop('secretkey', None)
     flask.flash('logged out')
     return flask.redirect(flask.url_for('home'))
+
+
+@app.route('/get_secretkey', methods=['GET', 'POST'])
+def get_secretkey():
+    if flask.request.method == 'POST':
+        addr = flask.request.form['address']
+        email = Email.query.filter_by(address=addr).first()
+        if email:
+            msg = Message("ROSEdu Poll login", recipients=[addr])
+            msg.body = flask.render_template(
+                'secretkey_email.txt',
+                secretkey=email.person.secretkey,
+            )
+            mail.send(msg)
+            flask.flash('Email sent')
+            return flask.redirect(flask.url_for('home'))
+
+        else:
+            flask.flash('No such email in the database')
+
+
+    return flask.render_template('get_secretkey.html')
 
 
 @app.route('/')

@@ -6,6 +6,8 @@
   Logged in as: {{ g.user.name }};
   <a href="{{ url_for('logout') }}">logout</a>
   {% if g.is_admin %}(admin){% endif %}
+{% else %}
+  <a href="{{ url_for('get_secretkey') }}">Request login</a>
 {% endif %}
 
 <h1>ROSEdu polls</h1>
