@@ -18,6 +18,14 @@ class Person(db.Model):
     secretkey = db.Column(db.String, unique=True)
 
     memberships = db.relationship('PollMember', lazy='dynamic', backref='person')
+    emails = db.relationship('Email', lazy='dynamic', backref='person')
+
+
+class Email(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    address = db.Column(db.String, unique=True, nullable=False)
+    person_id = db.Column(db.ForeignKey('person.id'), nullable=False)
 
 
 group_member = db.Table(
@@ -84,8 +92,9 @@ def authenticate_request():
         user = Person.query.filter_by(secretkey=secretkey).first()
         if user:
             flask.g.user = user
-            if user.email in app.config.get('ADMIN_EMAILS', []):
-                flask.g.is_admin = True
+            for email in user.emails:
+                if email.address in app.config.get('ADMIN_EMAILS', []):
+                    flask.g.is_admin = True
 
 
 @app.route('/login/<secretkey>')
@@ -195,26 +204,41 @@ def set_people(spec_path):
     with open(spec_path) as f:
         data = yaml.load(f)
 
+    email_map = {}
+    person_map = {}
+
     for row in data['people']:
-        person = get_or_create(Person, email=row['email'])
+        person = get_or_create(Person, id=row['id'])
+        assert person.id
+        person_map[person.id] = person
         person.name = row['name']
         if person.secretkey is None:
             person.secretkey = random_key()
 
+        for addr in row['emails']:
+            email_map[addr] = person
+
+    current_email_map = dict((e.address, e) for e in Email.query)
+    for to_remove in set(current_email_map) - set(email_map):
+        db.session.delete(current_email_map[to_remove])
+
+    for addr, person in email_map.items():
+        email_map[addr] = email = get_or_create(Email, address=addr)
+        email.person = person
+
     for slug, gdata in data['groups'].items():
         group = get_or_create(Group, slug=slug)
         group.name = gdata['name']
-        current_members = set(p.email for p in group.members)
-        new_members = set(gdata['members'])
+        print 'group', slug, group.name, '...'
+        current_members = set(group.members)
+        new_members = set(email_map[m].person for m in gdata['members'])
 
-        for email in new_members - current_members:
-            print 'adding:', email
-            person = Person.query.filter_by(email=email).one()
+        for person in new_members - current_members:
+            print 'adding:', person.name
             group.members.append(person)
 
-        for email in current_members - new_members:
+        for person in current_members - new_members:
             print 'removing:', email
-            person = Person.query.filter_by(email=email).one()
             group.members.remove(person)
 
     db.session.commit()
