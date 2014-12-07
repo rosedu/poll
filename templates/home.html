@@ -28,7 +28,7 @@
         <input type="hidden" name="poll" value="{{ poll.slug }}">
         <button type="submit" name="vote" value="yee" class="btn btn-sm btn-default">DA</button>
         <button type="submit" name="vote" value="nay" class="btn btn-sm btn-default">NU</button>
-        <button type="submit" name="vote" value="abs" class="btn btn-sm btn-default">abțirere</button>
+        <button type="submit" name="vote" value="abs" class="btn btn-sm btn-default">abținere</button>
       </form>
     {% else %}
       ai votat deja, mulțumim!
@@ -80,7 +80,7 @@
     <dl>
       <dt>DA <dd>{{ poll.votes_yee }}
       <dt>NU <dd>{{ poll.votes_nay }}
-      <dt>abțirere <dd>{{ poll.votes_abs }}
+      <dt>abținere <dd>{{ poll.votes_abs }}
     </dl>
   {% endif %}
 {% endfor %}
