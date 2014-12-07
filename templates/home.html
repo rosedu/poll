@@ -13,7 +13,10 @@
 <h1>ROSEdu polls</h1>
 
 {% for poll in poll_list %}
-  <h2>{{ poll.name }}</h2>
+  <h2>
+    {{ poll.name }}
+    {% if not poll.isvisible %}(hidden){% endif %}
+  </h2>
 
   {% if g.user %}
     {% if poll.user_can_vote() %}
