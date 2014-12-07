@@ -62,6 +62,10 @@ class Poll(db.Model):
     def has_not_voted(self):
         return [m.person for m in self.members if not m.voted]
 
+    @property
+    def votes_total(self):
+        return self.votes_yee + self.votes_nay + self.votes_abs
+
 
 class PollMember(db.Model):
 

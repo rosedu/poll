@@ -13,16 +13,22 @@
 {% for poll in poll_list %}
   <h2>{{ poll.name }}</h2>
 
-  {% if poll.user_can_vote() %}
-    <form action="{{ url_for('vote') }}" method="post">
-      <input type="hidden" name="poll" value="{{ poll.slug }}">
-      <button type="submit" name="vote" value="yee">DA</button>
-      <button type="submit" name="vote" value="nay">NU</button>
-      <button type="submit" name="vote" value="abs">abțirere</button>
-    </form>
-  {% else %}
-    ai votat deja, mulțumim!
+  {% if g.user %}
+    {% if poll.user_can_vote() %}
+      <form action="{{ url_for('vote') }}" method="post">
+        <input type="hidden" name="poll" value="{{ poll.slug }}">
+        <button type="submit" name="vote" value="yee">DA</button>
+        <button type="submit" name="vote" value="nay">NU</button>
+        <button type="submit" name="vote" value="abs">abțirere</button>
+      </form>
+    {% else %}
+      ai votat deja, mulțumim!
+    {% endif %}
   {% endif %}
+
+  <p>
+    Voturi: {{ poll.votes_total }} / {{ poll.members.count() }}
+  </p>
 
   {% if g.is_admin %}
     {% set novote = poll.has_not_voted() %}
