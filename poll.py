@@ -151,6 +151,15 @@ def home():
     )
 
 
+@app.route('/_crashme', methods=['GET', 'POST'])
+def crashme():
+    if flask.request.method == 'POST':
+        raise RuntimeError("Crashing, as requested.")
+    else:
+        return '<form method="post"><button type="submit">err</button></form>'
+
+
+
 @app.route('/create_poll/<slug>', methods=['GET', 'POST'])
 def create_poll(slug):
     group = Group.query.filter_by(slug=slug).first_or_404()
