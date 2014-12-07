@@ -53,6 +53,15 @@
       </form>
     {% endif %}
   {% endif %}
+
+  {% if not poll.isopen %}
+    <p>Rezultat:</p>
+    <dl>
+      <dt>DA <dd>{{ poll.votes_yee }}
+      <dt>NU <dd>{{ poll.votes_nay }}
+      <dt>abțirere <dd>{{ poll.votes_abs }}
+    </dl>
+  {% endif %}
 {% endfor %}
 
 {% if g.is_admin %}
