@@ -178,13 +178,25 @@ def create_poll(slug):
 
 @app.route('/poll/<slug>/open', methods=['POST'], defaults={'newstate': True})
 @app.route('/poll/<slug>/close', methods=['POST'], defaults={'newstate': False})
-def toggle_poll(slug, newstate):
+def set_poll_open(slug, newstate):
     poll = Poll.query.filter_by(slug=slug).first_or_404()
     if not flask.g.is_admin:
         flask.abort(403)
     poll.isopen = newstate
     db.session.commit()
     flask.flash("poll %s is %s" % (slug, 'open' if newstate else 'closed'))
+    return flask.redirect(flask.url_for('home'))
+
+
+@app.route('/poll/<slug>/show', methods=['POST'], defaults={'newstate': True})
+@app.route('/poll/<slug>/hide', methods=['POST'], defaults={'newstate': False})
+def set_poll_visible(slug, newstate):
+    poll = Poll.query.filter_by(slug=slug).first_or_404()
+    if not flask.g.is_admin:
+        flask.abort(403)
+    poll.isvisible = newstate
+    db.session.commit()
+    flask.flash("poll %s is %s" % (slug, 'visible' if newstate else 'hidden'))
     return flask.redirect(flask.url_for('home'))
 
 

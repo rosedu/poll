@@ -44,14 +44,26 @@
     {% endif %}
 
     {% if poll.isopen %}
-      <form action="{{ url_for('toggle_poll', slug=poll.slug, newstate=False) }}"
+      <form action="{{ url_for('set_poll_open', slug=poll.slug, newstate=False) }}"
             method="post">
         <button type="submit">close poll</button>
       </form>
     {% else %}
-      <form action="{{ url_for('toggle_poll', slug=poll.slug, newstate=True) }}"
+      <form action="{{ url_for('set_poll_open', slug=poll.slug, newstate=True) }}"
             method="post">
         <button type="submit">open poll</button>
+      </form>
+    {% endif %}
+
+    {% if poll.isvisible %}
+      <form action="{{ url_for('set_poll_visible', slug=poll.slug, newstate=False) }}"
+            method="post">
+        <button type="submit">hide poll</button>
+      </form>
+    {% else %}
+      <form action="{{ url_for('set_poll_visible', slug=poll.slug, newstate=True) }}"
+            method="post">
+        <button type="submit">show poll</button>
       </form>
     {% endif %}
   {% endif %}
