@@ -93,6 +93,7 @@ def login(secretkey):
 @app.route('/logout')
 def logout():
     flask.session.pop('secretkey', None)
+    flask.flash('logged out')
     return flask.redirect(flask.url_for('home'))
 
 
@@ -115,6 +116,7 @@ def create_poll(slug):
         for p in group.members:
             poll.members.append(PollMember(person=p))
         db.session.commit()
+        flask.flash('poll created')
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('create_poll.html', group=group)
@@ -140,6 +142,7 @@ def vote():
         flask.abort(400)
 
     db.session.commit()
+    flask.flash('vote saved')
     return flask.redirect(flask.url_for('home'))
 
 
