@@ -1,9 +1,7 @@
-<!doctype html>
+{% extends 'layout.html' %}
 
-<meta charset="utf-8">
 
-<html>
-
+{% block content %}
 {% if g.user %}
   Logged in as: {{ g.user.name }};
   <a href="{{ url_for('logout') }}">logout</a>
@@ -51,3 +49,4 @@
     {% endfor %}
   </ul>
 {% endif %}
+{% endblock %}

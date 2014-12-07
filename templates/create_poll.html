@@ -1,12 +1,11 @@
-<!doctype html>
+{% extends 'layout.html' %}
 
-<meta charset="utf-8">
 
-<html>
-
+{% block content %}
 <form method="POST">
   group: {{ group.name }}
   <input name="name" placeholder="name">
   <input name="slug" placeholder="slug">
   <button type="submit">create</button>
 </form>
+{% endblock %}
