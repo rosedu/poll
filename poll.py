@@ -210,6 +210,10 @@ def vote():
     if not member:
         flask.abort(403)
 
+    if member.voted:
+        flask.flash("you've already voted")
+        return flask.redirect(flask.url_for('home'))
+
     member.voted = True
     if form['vote'] == 'yee':
         poll.votes_yee += 1
