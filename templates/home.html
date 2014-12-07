@@ -34,6 +34,18 @@
       {% endfor %}
       </ul>
     {% endif %}
+
+    {% if poll.isopen %}
+      <form action="{{ url_for('toggle_poll', slug=poll.slug, newstate=False) }}"
+            method="post">
+        <button type="submit">close poll</button>
+      </form>
+    {% else %}
+      <form action="{{ url_for('toggle_poll', slug=poll.slug, newstate=True) }}"
+            method="post">
+        <button type="submit">open poll</button>
+      </form>
+    {% endif %}
   {% endif %}
 {% endfor %}
 

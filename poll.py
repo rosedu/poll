@@ -99,9 +99,13 @@ def logout():
 
 @app.route('/')
 def home():
+    poll_query = Poll.query
+    if not flask.g.is_admin:
+        poll_query = poll_query.filter_by(isvisible=True)
+
     return flask.render_template(
         'home.html',
-        poll_list=Poll.query.filter_by(isopen=True).all(),
+        poll_list=poll_query.all(),
         group_list=Group.query.all(),
     )
 
@@ -120,6 +124,18 @@ def create_poll(slug):
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('create_poll.html', group=group)
+
+
+@app.route('/poll/<slug>/open', methods=['POST'], defaults={'newstate': True})
+@app.route('/poll/<slug>/close', methods=['POST'], defaults={'newstate': False})
+def toggle_poll(slug, newstate):
+    poll = Poll.query.filter_by(slug=slug).first_or_404()
+    if not flask.g.is_admin:
+        flask.abort(403)
+    poll.isopen = newstate
+    db.session.commit()
+    flask.flash("poll %s is %s" % (slug, 'open' if newstate else 'closed'))
+    return flask.redirect(flask.url_for('home'))
 
 
 @app.route('/vote', methods=['POST'])
