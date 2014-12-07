@@ -118,10 +118,14 @@ def get_secretkey():
         addr = flask.request.form['address']
         email = Email.query.filter_by(address=addr).first()
         if email:
+            person = email.person
+            if not person.secretkey:
+                person.secretkey = random_key()
+                db.session.commit()
             msg = Message("ROSEdu Poll login", recipients=[addr])
             msg.body = flask.render_template(
                 'secretkey_email.txt',
-                secretkey=email.person.secretkey,
+                secretkey=person.secretkey,
             )
             mail.send(msg)
             flask.flash('Email sent')
@@ -236,8 +240,6 @@ def set_people(spec_path):
         assert person.id
         person_map[person.id] = person
         person.name = row['name']
-        if person.secretkey is None:
-            person.secretkey = random_key()
 
         for addr in row['emails']:
             email_map[addr] = person
