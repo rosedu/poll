@@ -27,7 +27,7 @@ class Email(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String, unique=True, nullable=False)
-    person_id = db.Column(db.ForeignKey('person.id'), nullable=False)
+    person_id = db.Column(db.ForeignKey('person.id'))
 
 
 group_member = db.Table(
@@ -228,6 +228,8 @@ def get_or_create(model, **kv):
 
 @manager.command
 def set_people(spec_path):
+    db.create_all()
+
     import yaml
     with open(spec_path) as f:
         data = yaml.load(f)
