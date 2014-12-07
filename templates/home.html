@@ -38,7 +38,7 @@
       nu au votat:
       <ul>
       {% for p in novote %}
-        <li>{{ p.name }} ({{ p.email }})</li>
+        <li>{{ p.name }} (#{{ p.id }})</li>
       {% endfor %}
       </ul>
     {% endif %}
