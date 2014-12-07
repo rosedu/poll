@@ -12,6 +12,10 @@
 
 <h1>ROSEdu polls</h1>
 
+{% if g.is_admin %}
+  <p>People with keys: {{ people_with_keys }}</p>
+{% endif %}
+
 {% for poll in poll_list %}
   <h2>
     {{ poll.name }}

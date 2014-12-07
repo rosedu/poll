@@ -148,6 +148,7 @@ def home():
         'home.html',
         poll_list=poll_query.all(),
         group_list=Group.query.all(),
+        people_with_keys=Person.query.filter(Person.secretkey != None).count(),
     )
 
 
