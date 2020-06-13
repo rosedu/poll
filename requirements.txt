@@ -9,5 +9,5 @@ MarkupSafe==0.23
 pip-tools==0.3.5
 PyYAML==3.11
 SQLAlchemy==0.9.8
-waitress==0.8.9
+waitress==1.4.3
 Werkzeug==0.15.3
